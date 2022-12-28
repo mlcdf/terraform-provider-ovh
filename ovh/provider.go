@@ -97,6 +97,7 @@ func Provider() *schema.Provider {
 			"ovh_hosting_privatedatabase_user":                        dataSourceHostingPrivateDatabaseUser(),
 			"ovh_hosting_privatedatabase_user_grant":                  dataSourceHostingPrivateDatabaseUserGrant(),
 			"ovh_hosting_privatedatabase_whitelist":                   dataSourceHostingPrivateDatabaseWhitelist(),
+			"ovh_hosting_web":                                         dataSourceHostingWeb(),
 			"ovh_domain_zone":                                         dataSourceDomainZone(),
 			"ovh_ip_service":                                          dataSourceIpService(),
 			"ovh_iploadbalancing":                                     dataSourceIpLoadbalancing(),
