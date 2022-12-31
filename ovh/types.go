@@ -23,8 +23,8 @@ type TaskOpts struct {
 }
 
 type UnitAndValue struct {
-	Unit  string `json:"unit"`
-	Value int    `json:"value"`
+	Unit  string  `json:"unit"`
+	Value float32 `json:"value"`
 }
 
 func (v UnitAndValue) ToMap() map[string]interface{} {

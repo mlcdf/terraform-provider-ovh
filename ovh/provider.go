@@ -167,6 +167,8 @@ func Provider() *schema.Provider {
 			"ovh_hosting_privatedatabase_user":                            resourceHostingPrivateDatabaseUser(),
 			"ovh_hosting_privatedatabase_user_grant":                      resourceHostingPrivateDatabaseUserGrant(),
 			"ovh_hosting_privatedatabase_whitelist":                       resourceHostingPrivateDatabaseWhitelist(),
+			"ovh_hosting_web":                                             resourceHostingWeb(),
+			"ovh_hosting_web_attached_domain":                             resourceHostingWebAttachedDomain(),
 			"ovh_ip_reverse":                                              resourceIpReverse(),
 			"ovh_ip_service":                                              resourceIpService(),
 			"ovh_iploadbalancing":                                         resourceIpLoadbalancing(),

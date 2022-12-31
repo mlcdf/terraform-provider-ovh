@@ -74,7 +74,7 @@ func resourceHostingPrivateDatabaseUserGrantCreate(d *schema.ResourceData, meta 
 
 	log.Printf("[DEBUG][Create][WaitForArchived] HostingPrivateDatabaseUserGrant")
 	endpoint = fmt.Sprintf("/hosting/privateDatabase/%s/tasks/%d", url.PathEscape(serviceName), ds.TaskId)
-	err = WaitArchivedHostingPrivateDabaseTask(config.OVHClient, endpoint, 2*time.Minute)
+	err = WaitArchivedHostingTask(config.OVHClient, endpoint, 2*time.Minute)
 	if err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ func resourceHostingPrivateDatabaseUserGrantDelete(d *schema.ResourceData, meta 
 
 	log.Printf("[DEBUG][Delete][WaitForArchived] HostingPrivateDatabaseUserGrant")
 	endpoint = fmt.Sprintf("/hosting/privateDatabase/%s/tasks/%d", url.PathEscape(serviceName), ds.TaskId)
-	err := WaitArchivedHostingPrivateDabaseTask(config.OVHClient, endpoint, 2*time.Minute)
+	err := WaitArchivedHostingTask(config.OVHClient, endpoint, 2*time.Minute)
 	if err != nil {
 		return err
 	}

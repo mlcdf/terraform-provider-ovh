@@ -255,7 +255,7 @@ func (opts *PartitionUpdateOpts) FromResource(d *schema.ResourceData) *Partition
 
 	opts.Size = UnitAndValue{
 		Unit:  "M",
-		Value: d.Get("size").(int),
+		Value: d.Get("size").(float32),
 	}
 
 	opts.Type = d.Get("type").(string)

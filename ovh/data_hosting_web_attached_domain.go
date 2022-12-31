@@ -7,9 +7,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceHostingWeb() *schema.Resource {
+func dataSourceHostingWebAttachedDomain() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceHostingWebRead,
+		Read: dataSourceHostingWebAttachedDomainRead,
 		Schema: map[string]*schema.Schema{
 			"service_name": {
 				Type:     schema.TypeString,
@@ -230,7 +230,7 @@ func dataSourceHostingWeb() *schema.Resource {
 	}
 }
 
-func dataSourceHostingWebRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceHostingWebAttachedDomainRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	serviceName := d.Get("service_name").(string)
 

@@ -11,47 +11,66 @@ import (
 	"github.com/ovh/terraform-provider-ovh/ovh/helpers"
 )
 
-func resourceHostingPrivateDatabaseDatabase() *schema.Resource {
+func resourceHostingWebAttachedDomain() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceHostingPrivateDatabaseDatabaseCreate,
-		Read:   resourceHostingPrivateDatabaseDatabaseRead,
-		Delete: resourceHostingPrivateDatabaseDatabaseDelete,
+		Create: resourceHostingWebAttachedDomainCreate,
+		Read:   resourceHostingWebAttachedDomainRead,
+		Delete: resourceHostingWebAttachedDomainDelete,
 		Importer: &schema.ResourceImporter{
-			State: resourceHostingPrivateDatabaseDatabaseImportState,
+			State: resourceHostingWebAttachedDomainImportState,
 		},
 		Schema: map[string]*schema.Schema{
 			"service_name": {
 				Type:        schema.TypeString,
-				Required:    true,
-				ForceNew:    true,
 				Description: "The internal name of your private database",
 			},
-			"database_name": {
+			"cdn": {
+				Type:        schema.TypeString,
+				Description: "The internal name of your private database",
+			},
+			"domain": {
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
-				Description: "Name of your new database",
+				Description: "Linked domain (fqdn)",
+			},
+			"firewall": {
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
+				Description: "Firewall state for this path",
+			},
+			"own_log": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Firewall state for this path",
+			},
+			"path": {
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
+				Description: "Firewall state for this path",
 			},
 		},
 	}
 }
 
-func resourceHostingPrivateDatabaseDatabaseCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceHostingWebAttachedDomainCreate(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	serviceName := d.Get("service_name").(string)
 	databaseName := d.Get("database_name").(string)
 
-	opts := (&HostingPrivateDatabaseDatabaseCreateOpts{}).FromResource(d)
-	ds := &HostingPrivateDatabaseDatabase{}
+	opts := (&HostingWebAttachedDomainCreateOpts{}).FromResource(d)
+	ds := &HostingWebAttachedDomain{}
 
-	log.Printf("[DEBUG][Create] HostingPrivateDatabaseDatabase")
+	log.Printf("[DEBUG][Create] HostingWebAttachedDomain")
 	endpoint := fmt.Sprintf("/hosting/privateDatabase/%s/database", url.PathEscape(serviceName))
 	err := config.OVHClient.Post(endpoint, opts, &ds)
 	if err != nil {
 		return fmt.Errorf("failed to create database: %s", err)
 	}
 
-	log.Printf("[DEBUG][Create][WaitForArchived] HostingPrivateDatabaseDatabase")
+	log.Printf("[DEBUG][Create][WaitForArchived] HostingWebAttachedDomain")
 	endpoint = fmt.Sprintf("/hosting/privateDatabase/%s/tasks/%d", url.PathEscape(serviceName), ds.TaskId)
 	err = WaitArchivedHostingTask(config.OVHClient, endpoint, 2*time.Minute)
 	if err != nil {
@@ -59,17 +78,17 @@ func resourceHostingPrivateDatabaseDatabaseCreate(d *schema.ResourceData, meta i
 	}
 
 	d.SetId(fmt.Sprintf("%s/%s", serviceName, databaseName))
-	return resourceHostingPrivateDatabaseDatabaseRead(d, meta)
+	return resourceHostingWebAttachedDomainRead(d, meta)
 }
 
-func resourceHostingPrivateDatabaseDatabaseRead(d *schema.ResourceData, meta interface{}) error {
+func resourceHostingWebAttachedDomainRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	serviceName := d.Get("service_name").(string)
 	databaseName := d.Get("database_name").(string)
 
-	ds := &HostingPrivateDatabaseDatabase{}
+	ds := &HostingWebAttachedDomain{}
 
-	log.Printf("[DEBUG][Read] HostingPrivateDatabaseDatabase")
+	log.Printf("[DEBUG][Read] HostingWebAttachedDomain")
 	endpoint := fmt.Sprintf("/hosting/privateDatabase/%s/database/%s", url.PathEscape(serviceName), url.PathEscape(databaseName))
 	if err := config.OVHClient.Get(endpoint, &ds); err != nil {
 		return helpers.CheckDeleted(d, err, endpoint)
@@ -83,20 +102,20 @@ func resourceHostingPrivateDatabaseDatabaseRead(d *schema.ResourceData, meta int
 	return nil
 }
 
-func resourceHostingPrivateDatabaseDatabaseDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceHostingWebAttachedDomainDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*Config)
 	serviceName := d.Get("service_name").(string)
 	databaseName := d.Get("database_name").(string)
 
-	ds := &HostingPrivateDatabaseDatabase{}
+	ds := &HostingWebAttachedDomain{}
 
-	log.Printf("[DEBUG][Delete] HostingPrivateDatabaseDatabase")
+	log.Printf("[DEBUG][Delete] HostingWebAttachedDomain")
 	endpoint := fmt.Sprintf("/hosting/privateDatabase/%s/database/%s", url.PathEscape(serviceName), url.PathEscape(databaseName))
 	if err := config.OVHClient.Delete(endpoint, ds); err != nil {
 		return helpers.CheckDeleted(d, err, endpoint)
 	}
 
-	log.Printf("[DEBUG][Delete][WaitForArchived] HostingPrivateDatabaseDatabase")
+	log.Printf("[DEBUG][Delete][WaitForArchived] HostingWebAttachedDomain")
 	endpoint = fmt.Sprintf("/hosting/privateDatabase/%s/tasks/%d", url.PathEscape(serviceName), ds.TaskId)
 	err := WaitArchivedHostingTask(config.OVHClient, endpoint, 2*time.Minute)
 	if err != nil {
@@ -107,18 +126,18 @@ func resourceHostingPrivateDatabaseDatabaseDelete(d *schema.ResourceData, meta i
 	return nil
 }
 
-func resourceHostingPrivateDatabaseDatabaseImportState(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceHostingWebAttachedDomainImportState(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	givenId := d.Id()
 	splitId := strings.SplitN(givenId, "/", 2)
 
-	log.Printf("[DEBUG][Import] HostingPrivateDatabaseDatabase givenId: %s", givenId)
+	log.Printf("[DEBUG][Import] HostingWebAttachedDomain givenId: %s", givenId)
 
 	if len(splitId) != 2 {
 		return nil, fmt.Errorf("import Id is not SERVICE_NAME/DATABASE_NAME formatted")
 	}
 	d.SetId(splitId[0])
 	d.Set("service_name", splitId[0])
-	d.Set("database_name", splitId[1])
+	d.Set("attached_domain", splitId[1])
 	results := make([]*schema.ResourceData, 1)
 	results[0] = d
 	return results, nil

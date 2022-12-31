@@ -60,7 +60,7 @@ func resourceHostingPrivateDatabaseUserCreate(d *schema.ResourceData, meta inter
 
 	log.Printf("[DEBUG][Create][WaitForArchived] HostingPrivateDatabaseUser")
 	endpoint = fmt.Sprintf("/hosting/privateDatabase/%s/tasks/%d", url.PathEscape(serviceName), ds.TaskId)
-	err = WaitArchivedHostingPrivateDabaseTask(config.OVHClient, endpoint, 2*time.Minute)
+	err = WaitArchivedHostingTask(config.OVHClient, endpoint, 2*time.Minute)
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func resourceHostingPrivateDatabaseUserDelete(d *schema.ResourceData, meta inter
 
 	log.Printf("[DEBUG][Delete][WaitForArchived] HostingPrivateDatabaseUser")
 	endpoint = fmt.Sprintf("/hosting/privateDatabase/%s/tasks/%d", url.PathEscape(serviceName), ds.TaskId)
-	err := WaitArchivedHostingPrivateDabaseTask(config.OVHClient, endpoint, 2*time.Minute)
+	err := WaitArchivedHostingTask(config.OVHClient, endpoint, 2*time.Minute)
 	if err != nil {
 		return err
 	}

@@ -13,7 +13,7 @@ import (
 	"github.com/ovh/go-ovh/ovh"
 )
 
-const testAccHostingPrivateDatabaseBasic = `
+const testAccHostingWebBasic = `
 data "ovh_order_cart" "mycart" {
   ovh_subsidiary = "fr"
   description    = "%s"
@@ -26,7 +26,7 @@ data "ovh_order_cart_product_plan" "database" {
   plan_code      = "private-sql-512-instance"
 }
   
-resource "ovh_hosting_privatedatabase" "database" {
+resource "ovh_hosting_web" "database" {
   ovh_subsidiary = data.ovh_order_cart.mycart.ovh_subsidiary
   payment_mean   = "ovh-account"
   display_name   = "%s"
@@ -50,9 +50,9 @@ resource "ovh_hosting_privatedatabase" "database" {
 `
 
 func init() {
-	resource.AddTestSweepers("ovh_hosting_privatedatabase", &resource.Sweeper{
-		Name:         "ovh_hosting_privatedatabase",
-		Dependencies: []string{"ovh_hosting_privatedatabase"},
+	resource.AddTestSweepers("ovh_hosting_web", &resource.Sweeper{
+		Name:         "ovh_hosting_web",
+		Dependencies: []string{"ovh_hosting_web"},
 		F:            testSweepHostingPrivateDatabase,
 	})
 }
@@ -64,20 +64,20 @@ func testSweepHostingPrivateDatabase(region string) error {
 	}
 
 	serviceNames := make([]string, 0)
-	if err := config.OVHClient.Get("/hosting/privateDatabase", &serviceNames); err != nil {
-		return fmt.Errorf("Error calling GET /hosting/privateDatabase:\n\t %q", err)
+	if err := config.OVHClient.Get("/hosting/web", &serviceNames); err != nil {
+		return fmt.Errorf("Error calling GET /hosting/web:\n\t %q", err)
 	}
 
 	if len(serviceNames) == 0 {
-		log.Print("[DEBUG] No hosting privateDatabase to sweep")
+		log.Print("[DEBUG] No hosting web to sweep")
 		return nil
 	}
 
 	for _, serviceName := range serviceNames {
 		r := &HostingPrivateDatabase{}
-		log.Printf("[DEBUG] Will get hosting privateDatabase: %v", serviceName)
+		log.Printf("[DEBUG] Will get hosting web: %v", serviceName)
 		endpoint := fmt.Sprintf(
-			"/hosting/privateDatabase/%s",
+			"/hosting/web/%s",
 			url.PathEscape(serviceName),
 		)
 
@@ -85,12 +85,12 @@ func testSweepHostingPrivateDatabase(region string) error {
 			return fmt.Errorf("calling Get %s:\n\t %q", endpoint, err)
 		}
 
-		log.Printf("[DEBUG] Will delete privateDatabase: %v", serviceName)
+		log.Printf("[DEBUG] Will delete web: %v", serviceName)
 
 		terminate := func() (string, error) {
-			log.Printf("[DEBUG] Will terminate hosting privateDatabase %s", serviceName)
+			log.Printf("[DEBUG] Will terminate hosting web %s", serviceName)
 			endpoint := fmt.Sprintf(
-				"/hosting/privateDatabase/%s/terminate",
+				"/hosting/web/%s/terminate",
 				url.PathEscape(serviceName),
 			)
 			if err := config.OVHClient.Post(endpoint, nil, nil); err != nil {
@@ -103,9 +103,9 @@ func testSweepHostingPrivateDatabase(region string) error {
 		}
 
 		confirmTerminate := func(token string) error {
-			log.Printf("[DEBUG] Will confirm termination of hosting privateDatabase %s", serviceName)
+			log.Printf("[DEBUG] Will confirm termination of hosting web %s", serviceName)
 			endpoint := fmt.Sprintf(
-				"/hosting/privateDatabase/%s/confirmTermination",
+				"/hosting/web/%s/confirmTermination",
 				url.PathEscape(serviceName),
 			)
 			if err := config.OVHClient.Post(endpoint, &HostingPrivateDatabaseConfirmTerminationOpts{Token: token}, nil); err != nil {
@@ -130,32 +130,32 @@ func testSweepHostingPrivateDatabase(region string) error {
 	return nil
 }
 
-func TestAccHostingPrivateDatabase_basic(t *testing.T) {
+func TestAccHostingweb_basic(t *testing.T) {
 	desc := acctest.RandomWithPrefix(test_prefix)
 	displayName := acctest.RandomWithPrefix(test_prefix)
-	dc := os.Getenv("OVH_HOSTING_PRIVATEDATABASE_DC_TEST")
-	engine := os.Getenv("OVH_HOSTING_PRIVATEDATABASE_ENGINE_TEST")
+	dc := os.Getenv("OVH_HOSTING_WEB_DC_TEST")
+	engine := os.Getenv("OVH_HOSTING_WEB_ENGINE_TEST")
 
 	config := fmt.Sprintf(
-		testAccHostingPrivateDatabaseBasic,
+		testAccHostingWebBasic,
 		desc,
 		displayName,
 		dc,
 		engine,
 	)
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheckHostingPrivateDatabase(t) },
+		PreCheck:  func() { testAccPreCheckHostingWeb(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(
-						"ovh_hosting_privatedatabase.database", "display_name", displayName),
+						"ovh_hosting_web.web", "display_name", displayName),
 					resource.TestCheckResourceAttr(
-						"ovh_hosting_privatedatabase.database", "datacenter", dc),
+						"ovh_hosting_web.web", "datacenter", dc),
 					resource.TestCheckResourceAttr(
-						"ovh_hosting_privatedatabase.database", "version", engine),
+						"ovh_hosting_web.web", "version", engine),
 				),
 			},
 		},

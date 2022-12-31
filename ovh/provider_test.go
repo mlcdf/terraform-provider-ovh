@@ -165,8 +165,7 @@ func testAccPreCheckHostingPrivateDatabaseWhitelist(t *testing.T) {
 // are set.
 func testAccPreCheckHostingWeb(t *testing.T) {
 	testAccPreCheckCredentials(t)
-	checkEnvOrSkip(t, "OVH_HOSTING_WEB_ENGINE_TEST")
-	checkEnvOrSkip(t, "OVH_HOSTING_WEB_DC_TEST")
+	checkEnvOrSkip(t, "OVH_HOSTING_WEB_DISTRICT_TEST")
 }
 
 // Checks that the environment variables needed for the /cloud acceptance tests
